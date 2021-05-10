@@ -16,8 +16,12 @@ app.use(cors());
 //Lectura y parseo del Body
 app.use(express.json());
 
+//Direcictorio Publico
+app.use(express.static('public'));
+
 // SDK de Mercado Pago
 const mercadopago = require('mercadopago');
+
 // Agrega credenciales
 mercadopago.configure({
     access_token: process.env.PROD_ACCESS_TOKEN

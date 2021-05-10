@@ -16,7 +16,7 @@ const getComercios = async(req, res = response) => {
 //Craer Comercio
 const crearComercios = async(req, res = response) => {
 
-    const { email } = req.body;
+    const { email, password } = req.body;
 
     try {
 

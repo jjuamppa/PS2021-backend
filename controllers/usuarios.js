@@ -1,6 +1,5 @@
 //Controllers
 const { response, json } = require('express');
-const usuario = require('../models/usuario');
 const Usuario = require('../models/usuario');
 const bcrypt = require('bcryptjs');
 const { generarJWT } = require('../helpers/jwt');
@@ -66,10 +65,10 @@ const actualizarUsuario = async(req, res = response) => {
 
     // TODO: Validar token y comprobar si el usuario es correcto
 
-    const _id = req.params.id;
+    const uid = req.params.id;
 
     try {
-        const usuarioDB = await Usuario.findById(_id);
+        const usuarioDB = await Usuario.findById(uid);
 
         //comprobar si el usuario existe
         if (!usuarioDB) {
@@ -92,9 +91,16 @@ const actualizarUsuario = async(req, res = response) => {
             }
         }
 
-        campos.email = email;
+        if (!usuarioDB.google) {
+            campos.email = email;
+        } else if (usuarioDB.email !== email) {
+            return res.status.json({
+                ok: false,
+                msg: 'Usuario de google no puede modificar su correo'
+            });
+        }
 
-        const usuarioActualizado = await Usuario.findByIdAndUpdate(_id, campos, { new: true });
+        const usuarioActualizado = await Usuario.findByIdAndUpdate(uid, campos, { new: true });
         res.json({
             ok: true,
             mgs: usuarioActualizado
@@ -105,8 +111,8 @@ const actualizarUsuario = async(req, res = response) => {
         console.log(error);
         res.status(500).json({
             ok: false,
-            mgs: 'error inesperado'
-        });
+            mgs: 'error inesperado de actializar Usuario',
+        })
     }
 
 }
@@ -114,9 +120,9 @@ const actualizarUsuario = async(req, res = response) => {
 //Borar Uduario
 const borrarUsuario = async(req, res = response) => {
 
-    const _id = req.params.id;
+    const uid = req.params.id;
     try {
-        const usuarioDB = await Usuario.findById(_id);
+        const usuarioDB = await Usuario.findById(uid);
 
         if (!usuarioDB) {
             return res.status(404).json({
@@ -124,7 +130,7 @@ const borrarUsuario = async(req, res = response) => {
                 mgs: 'no se encuatra usuario con ese id'
             });
         }
-        await Usuario.findByIdAndDelete(_id);
+        await Usuario.findByIdAndDelete(uid);
 
         res.json({
             ok: true,

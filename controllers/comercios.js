@@ -58,11 +58,32 @@ const actualizarComercios = (req, res = response) => {
         msg: 'actualizarComercios'
     });
 }
-const borrarComercios = (req, res = response) => {
-    res.json({
-        ok: true,
-        msg: 'borrarComercios'
-    });
+const borrarComercios = async(req, res = response) => {
+    const uid = req.params.id;
+    try {
+        const comercioDB = await Comercio.findById(uid);
+
+        if (!comercioDB) {
+            return res.status(404).json({
+                ok: false,
+                mgs: 'no se encuatra comercio con ese id'
+            });
+        }
+        await Comercio.findByIdAndDelete(uid);
+
+        res.json({
+            ok: true,
+            msg: 'comercio eliminado'
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'hable con el administrador'
+        });
+
+    }
 }
 
 module.exports = {

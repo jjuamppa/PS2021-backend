@@ -3,16 +3,31 @@ const { response, json } = require('express');
 const Usuario = require('../models/usuario');
 const bcrypt = require('bcryptjs');
 const { generarJWT } = require('../helpers/jwt');
+const emailer = require('../nodemailer/nodemailer');
 
-//Buscar Usuario
+
+//Buscar Usuario con paginacion de 5 en 5
+
 const getUsuario = async(req, res) => {
 
-    const usuarios = await Usuario.find({}, 'nombre email role google img');
+    const desde = Number(req.query.desde) || 0;
+
+    const [usuarios, total] = await Promise.all([
+        Usuario
+        .find({}, 'nombre email role google img')
+        .skip(desde)
+        .limit(5),
+
+        Usuario.countDocuments()
+    ]);
+
 
     res.json({
         ok: true,
-        usuarios
+        usuarios,
+        total
     });
+
 }
 
 //Craer Usuario
@@ -41,14 +56,19 @@ const crearUsuario = async(req, res = response) => {
         //Grabar Usuario
         await usuario.save();
 
+
         //Generar TOKEN (JWT)
         const token = await generarJWT(usuario.id);
+
 
         res.json({
             ok: true,
             usuario,
             token
         });
+
+        //Enviar correo de Registro
+        emailer.sendMail();
 
     } catch (error) {
         console.log(error);

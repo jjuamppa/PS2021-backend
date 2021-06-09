@@ -1,15 +1,12 @@
-// path '/api/comercios'
-
-const { Router, response } = require('express');
-const { check } = require('express-validator');
+const { Router } = require("express");
+const { check } = require("express-validator");
 const { validarCampos } = require('../Middlewares/validar-campos');
-const { getComercios, crearComercios, actualizarComercios, borrarComercios } = require('../controllers/comercios');
+const { getSolicitudes, crearSolicitudes, borrarSolicitudes } = require('../controllers/solicitudes');
 
-const { validarJWT } = require('../Middlewares/validar-jwt');
 
 const router = Router();
 
-router.get('/', getComercios);
+router.get('/', getSolicitudes);
 
 router.post('/', [
     check('nombre', 'el nombre es obligatorio').not().isEmpty(),
@@ -17,13 +14,9 @@ router.post('/', [
     check('telefono', 'la telefono es obligatorio').not().isEmpty(),
     check('email', 'el email es obligatorio').isEmail(),
     validarCampos,
-
-], crearComercios);
-
-router.put('/:id', [],
-    actualizarComercios);
+], crearSolicitudes);
 
 router.delete('/:id',
-    borrarComercios);
+    borrarSolicitudes);
 
 module.exports = router;

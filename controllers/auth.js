@@ -3,6 +3,8 @@ const Usuario = require('../models/usuario');
 const bcrypt = require('bcryptjs');
 const { generarJWT } = require('../helpers/jwt');
 const { googleVerify } = require('../helpers/google-verify');
+const emailer = require('../nodemailer/nodemailer');
+
 
 
 const login = async(req, res = response) => {
@@ -83,6 +85,9 @@ const googleSignIn = async(req, res = response) => {
             msg: 'token de google',
             token
         });
+
+        //Enviar correo de Registro
+        emailer.sendMail();
 
     } catch (error) {
         console.log(error);

@@ -1,3 +1,4 @@
+const { response } = require("express");
 const Solicitud = require("../models/solicitud");
 
 const getSolicitudes = async(req, res = response) => {

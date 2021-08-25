@@ -1,25 +1,23 @@
 const { Router } = require("express");
 const { check } = require("express-validator");
 const { validarCampos } = require('../Middlewares/validar-campos');
-const { getSolicitudes, crearSolicitudes, borrarSolicitudes, actualizarSolicitudes } = require('../controllers/solicitudes');
+const { getEnvios, crearEnvios, borrarEnvios } = require('../controllers/envios');
 
 
 const router = Router();
 
-router.get('/', getSolicitudes);
+router.get('/', getEnvios);
 
 router.post('/', [
-    check('nombre', 'el nombre es obligatorio').not().isEmpty(),
     check('direccion', 'la dirreccion es obligatorio').not().isEmpty(),
     check('telefono', 'la telefono es obligatorio').not().isEmpty(),
     check('email', 'el email es obligatorio').isEmail(),
+    check('fecha', 'la fecha es obligatoria').not().isEmpty(),
+    check('monto', 'el monto es obligatorio').not().isEmpty(),
     validarCampos,
-], crearSolicitudes);
-
-router.put('/:id', [],
-    actualizarSolicitudes);
+], crearEnvios);
 
 router.delete('/:id',
-    borrarSolicitudes);
+    borrarEnvios);
 
 module.exports = router;

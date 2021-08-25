@@ -4,8 +4,7 @@ const bcrypt = require('bcryptjs');
 const { generarJWT } = require('../helpers/jwt');
 const { googleVerify } = require('../helpers/google-verify');
 const emailer = require('../nodemailer/nodemailer');
-
-
+const { getMenuFrontEnd } = require('../helpers/menu-frontend');
 
 const login = async(req, res = response) => {
     const { email, password } = req.body;
@@ -36,7 +35,8 @@ const login = async(req, res = response) => {
 
         res.json({
             ok: true,
-            token
+            token,
+            menu: getMenuFrontEnd(usuarioDB.role)
         });
 
     } catch (error) {
@@ -83,7 +83,9 @@ const googleSignIn = async(req, res = response) => {
         res.json({
             ok: true,
             msg: 'token de google',
-            token
+            token,
+            menu: getMenuFrontEnd(usuario.role)
+
         });
 
         //Enviar correo de Registro
@@ -113,7 +115,9 @@ const renewToken = async(req, res = response) => {
     res.json({
         ok: true,
         token,
-        usuario
+        usuario,
+        menu: getMenuFrontEnd(usuario.role)
+
 
     });
 

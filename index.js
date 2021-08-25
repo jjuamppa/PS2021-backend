@@ -37,6 +37,7 @@ mercadopago.configure({
 //rutas
 app.use('/api/usuarios', require('./routes/usuarios'));
 app.use('/api/solicitudes', require('./routes/solicitudes'));
+app.use('/api/envios', require('./routes/envios'));
 app.use('/api/transacciones', require('./routes/transacciones'));
 app.use('/api/login', require('./routes/auth'));
 app.use('/api/comercios', require('./routes/comercios'));

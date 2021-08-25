@@ -2,12 +2,25 @@ const { response } = require("express");
 const Solicitud = require("../models/solicitud");
 
 const getSolicitudes = async(req, res = response) => {
-    const solicitudes = await Solicitud.find({}, 'nombre email direccion telefono');
+
+    const desde = Number(req.query.desde) || 0;
+
+    const [solicitudes, total] = await Promise.all([
+        Solicitud
+        .find({}, 'nombre email direccion telefono')
+        .skip(desde)
+        .limit(5),
+
+        Solicitud.countDocuments()
+    ]);
+
 
     res.json({
         ok: true,
-        solicitudes
+        solicitudes,
+        total
     });
+
 }
 
 //Craer Solicitud
@@ -49,7 +62,45 @@ const crearSolicitudes = async(req, res = response) => {
 
 }
 
+const actualizarSolicitudes = async(req, res = response) => {
 
+    const id = req.params.id;
+    const uid = req.uid;
+
+    try {
+
+        const solicitud = await Solicitud.findById(id);
+
+        if (!solicitud) {
+            return res.status(404).json({
+                ok: true,
+                msg: 'Solicitud no encontrada por id',
+            });
+        }
+
+        const cambiosSolicitud = {
+            ...req.body,
+        }
+
+        const solicitudActualizada = await Solicitud.findByIdAndUpdate(id, cambiosSolicitud, { new: true });
+
+        res.json({
+            ok: true,
+            solicitud: solicitudActualizada
+        })
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.status(500).json({
+            ok: false,
+            msg: 'Hable con el administrador'
+        })
+    }
+
+
+}
 
 const borrarSolicitudes = async(req, res = response) => {
     const uid = req.params.id;
@@ -81,5 +132,6 @@ const borrarSolicitudes = async(req, res = response) => {
 module.exports = {
     getSolicitudes,
     crearSolicitudes,
-    borrarSolicitudes
+    borrarSolicitudes,
+    actualizarSolicitudes
 }

@@ -5,12 +5,14 @@ const { check } = require('express-validator');
 const { validarCampos } = require('../Middlewares/validar-campos');
 
 const { validarJWT } = require('../Middlewares/validar-jwt');
-const { getTransacciones, crearTransacciones, obetenerPromMensual } = require('../controllers/transacciones');
+const { getTransacciones, crearTransacciones, obetenerVentaxDia, obetenerVentaxMes, getTransaccionesxId } = require('../controllers/transacciones');
 
 const router = Router();
 
 router.get('/', getTransacciones);
-router.get('/transaccionesMes', obetenerPromMensual);
+router.get('/usuario/:id', getTransaccionesxId);
+router.get('/transaccionesDia', obetenerVentaxDia);
+router.get('/transaccionesMes', obetenerVentaxMes);
 
 router.post('/', [validarJWT,
     check('fecha', 'la fecha es obligatoria').not().isEmpty(),

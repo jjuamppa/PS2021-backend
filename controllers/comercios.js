@@ -4,13 +4,36 @@ const Comercio = require('../models/comercio');
 
 
 
-const getComercios = async(req, res = response) => {
-    const comercios = await Comercio.find({}, 'nombre email direccion telefono');
+// const getComercios = async(req, res = response) => {
+//     const comercios = await Comercio.find({}, 'nombre email direccion telefono');
+
+//     res.json({
+//         ok: true,
+//         comercios
+//     });
+// }
+
+
+const getComercios = async(req, res) => {
+
+    const desde = Number(req.query.desde) || 0;
+
+    const [comercios, total] = await Promise.all([
+        Comercio
+        .find({}, 'nombre email direccion telefono')
+        .skip(desde)
+        .limit(5),
+
+        Comercio.countDocuments()
+    ]);
+
 
     res.json({
         ok: true,
-        comercios
+        comercios,
+        total
     });
+
 }
 
 //Craer Comercio
@@ -52,12 +75,48 @@ const crearComercios = async(req, res = response) => {
 
 }
 
-const actualizarComercios = (req, res = response) => {
-    res.json({
-        ok: true,
-        msg: 'actualizarComercios'
-    });
+
+const actualizarComercios = async(req, res = response) => {
+
+    const id = req.params.id;
+    const uid = req.uid;
+
+    try {
+
+        const comercio = await Comercio.findById(id);
+
+        if (!comercio) {
+            return res.status(404).json({
+                ok: true,
+                msg: 'Comercio no encontrado por id',
+            });
+        }
+
+        const cambiosComercio = {
+            ...req.body,
+        }
+
+        const comercioActualizado = await Comercio.findByIdAndUpdate(id, cambiosComercio, { new: true });
+
+        res.json({
+            ok: true,
+            comercio: comercioActualizado
+        })
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.status(500).json({
+            ok: false,
+            msg: 'Hable con el administrador'
+        })
+    }
+
+
 }
+
+
 const borrarComercios = async(req, res = response) => {
     const uid = req.params.id;
     try {
